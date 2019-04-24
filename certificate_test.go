@@ -21,6 +21,20 @@ func TestClient_FetchCertificates(t *testing.T) {
 	}
 }
 
+func TestClient_FetchAllCertificates(t *testing.T) {
+	account, order, _ := makeOrderFinalised(t, nil)
+	if order.Certificate == "" {
+		t.Fatalf("no certificate: %+v", order)
+	}
+	certs, err := testClient.FetchAllCertificates(account, order.Certificate)
+	if err != nil {
+		t.Fatalf("expeceted no error, got: %v", err)
+	}
+	if len(certs) <= 1 {
+		t.Fatalf("expected > 1 cert chains, got: %d", len(certs))
+	}
+}
+
 func TestClient_RevokeCertificate(t *testing.T) {
 	// test revoking cert with cert key
 	account, order, privKey := makeOrderFinalised(t, nil)

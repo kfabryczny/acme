@@ -254,3 +254,27 @@ func fetchLink(resp *http.Response, wantedLink string) string {
 	}
 	return ""
 }
+
+// Fetches all http Link header from a http response
+func fetchLinks(resp *http.Response, wantedLink string) []string {
+	if resp == nil {
+		return nil
+	}
+	linkHeader := resp.Header["Link"]
+	if len(linkHeader) == 0 {
+		return nil
+	}
+	var links []string
+	for _, l := range linkHeader {
+		matches := regLink.FindAllStringSubmatch(l, -1)
+		for _, m := range matches {
+			if len(m) != 3 {
+				continue
+			}
+			if m[2] == wantedLink {
+				links = append(links, m[1])
+			}
+		}
+	}
+	return links
+}
